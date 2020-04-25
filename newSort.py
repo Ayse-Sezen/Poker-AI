@@ -42,12 +42,10 @@ def sort(communityCardsList, holeCardsList):
             if entry == card[0]:
                 cardDict[entry].append((card[1], "Hole"))
     # Royal Flush Test
-    cardList = royalFlush(cardDict, holeCardsList)
-    print(cardList)
+    # cardList = royalFlush(cardDict, holeCardsList)
+    # print(cardList)
+    return cardDict
 
-
-
-    
 
 """
     # Royal Flush Test
@@ -106,11 +104,11 @@ def royalFlush(cardDict, holeCardsList):
             if holeCardsList[1][0] == 10 or J or Q or K or A:
                 flag = True
             else:
-                #return []
-                return "Error: Your second hole card did not match the 10, J, Q, K, A values"
+                return []
+                # return "Error: Your second hole card did not match the 10, J, Q, K, A values"
         else:
-            #return []
-            return "Error: Your first hole card did not match the 10, J, Q, K, A values"
+            return []
+            # return "Error: Your first hole card did not match the 10, J, Q, K, A values"
 
 
     if flag:
@@ -131,8 +129,8 @@ def royalFlush(cardDict, holeCardsList):
                             communityCtr+=1
             else:
                 # if entries don't exist for that card value in the dict, then our 10, J, K, Q, A pattern was broken
-                #return []
-                return "Error: Entries don't exists for that card value in the dict"
+                return []
+                # return "Error: Entries don't exists for that card value in the dict"
 
 
         # if, after the for loop, we have the proper cards, return the hand
@@ -140,11 +138,11 @@ def royalFlush(cardDict, holeCardsList):
             if holeCtr == 2 and communityCtr == 3:
                 return (hand, 10)
             else:
-                #return []
-                return "Error: Did not have two hole and three community cards"
+                return []
+                # return "Error: Did not have two hole and three community cards"
         else: # if for whatever reason the hand does not have a length of 5 (which is should, otherwise it's an error)
-            print("Royal Flush Error: Hand did not have a length of 5")
-            print(len(hand))
+            # print("Royal Flush Error: Hand did not have a length of 5")
+            # print(len(hand))
             return ()
 
 
@@ -440,7 +438,6 @@ def twoPair(cardDict, holeCardsList):
         # if we've found what we needed then break out of outer for loop
         if len(comCardPair) == 2 and extraComCard:
             break
-
     # next we check to see if our hole cards make up a pair themselves or not
 
     # if they do...
@@ -601,16 +598,45 @@ def highCard(cardDict, holeCardsList):
 
     return ()
 
-    
 
+def rateHand(communityCardsList, holeCardsList):
+    cardDict = sort(communityCardsList, holeCardsList)
+    hand = royalFlush(cardDict, holeCardsList)
+    if hand: return hand
+    hand = straightFlush(cardDict, holeCardsList)
+    if hand: return hand
+    hand = fourOfAKind(cardDict, holeCardsList)
+    if hand: return hand
+    hand = fullHouse(cardDict, holeCardsList)
+    if hand: return hand
+    hand = flush(cardDict, holeCardsList)
+    if hand: return hand
+    hand = straight(cardDict, holeCardsList)
+    if hand: return hand
+    hand = threeOfAKind(cardDict, holeCardsList)
+    if hand: return hand
+    hand = twoPair(cardDict, holeCardsList)
+    if hand: return hand
+    hand = onePair(cardDict, holeCardsList)
+    if hand: return hand
+    hand = highCard(cardDict, holeCardsList)
+    if hand: return hand
+    return("error finding hand score in rateHand")
+
+
+# you need to make sure the same card from the same suit isn't entered twice
+cardList = [(A, H), (7, C), (5, S), (Q, D)]
+holeCardsList = [(2, D), (3, H)]
+hand, score = rateHand(cardList, holeCardsList)
+print(hand, score)
 
 
 # Test runs
 
 # Royal Flush
-cardList = [(A, H), (Q, H), (K, H), (Q, D)] # you need to make sure the same card from the same suit isn't entered twice
-holeCardsList = [(10, H), (J, H)]
-sort(cardList, holeCardsList)
+# cardList = [(A, H), (Q, H), (K, H), (Q, D)] # you need to make sure the same card from the same suit isn't entered twice
+# holeCardsList = [(10, H), (J, H)]
+# sort(cardList, holeCardsList)
 
 """
 # Straight Flush
