@@ -1,5 +1,6 @@
 import random
 from agents import User, Ai
+
 A = 14
 K = 13
 Q = 12
@@ -58,15 +59,14 @@ for i in range(7):
     # Make a random number generator between 0 and len(deck) four times, 2 for player and 2 for AI
     # Check to make sure you're not getting the card multiple times (pop picked cards from deck)
 
-    for i in range(2):
+    for i in range(4):
         deckLength = len(deck)
         card = deck.pop(random.randrange(deckLength))
-        ai.holeCards.append(card)
+        if i < 2:
+            ai.holeCards.append(card)
+        else:
+            user.holeCards.append(card)
 
-    for i in range(2):
-        deckLength = len(deck)
-        card = deck.pop(random.randrange(deckLength))
-        user.holeCards.append(card)
         # Randomly choose a number between 0 and len(deck)
         # Pop card from deck and push into holeCardsList
         #loop back up and get next card
@@ -157,17 +157,21 @@ for i in range(7):
     # Non Dealer: Picks best hand
         # same as above for AI and User hand building
 
+    userScore = user.getHandScore(communityCardsList)
+    aiScore = ai.getHandScore(communityCardsList)
     # Compare Hands
     # Just compare card combo numbers returned back with hands from newSort, player with the highest hand wins
-    if userHand[1] > aiHand[1]:
+    if userScore > aiScore:
         # user wins pot, add pot to user's money
         user.winnings += pot
-    elif aiHand[1] > userHand[1]:
+    elif aiScore > userScore:
         # ai wins the pot, add pot to ai's money
         ai.winnings += pot
     else:
         # draw, no one wins
-        pass
+        user.winnings += pot//2
+        user.winnings += pot//2
+        # this rounds off uneven pots if that was possible
 
     # Reset card deck, put all cards back in the deck
     deck = originalCardSet
