@@ -1,3 +1,4 @@
+import random
 A = 14
 K = 13
 Q = 12
@@ -24,11 +25,15 @@ S = 'Spades'
 
 
 
-originalCardSet = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), (10, H), (J, H), (Q, H), (K, H), (A, H),
-(1, D), (2, D), (3, D), (4, D), (5, D), (6, D), (7, D), (8, D), (9, D), (10, D), (J, D), (Q, D), (K, D), (A, D)]
+originalCardSet = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), (10, H), (J, H), (Q, H), (K, H),
+                   (1, D), (2, D), (3, D), (4, D), (5, D), (6, D), (7, D), (8, D), (9, D), (10, D), (J, D), (Q, D), (K, D),
+                   (1, C), (2, C), (3, C), (4, C), (5, C), (6, C), (7, C), (8, C), (9, C), (10, C), (J, C), (Q, C), (K, C),
+                   (1, S), (2, S), (3, S), (4, S), (5, S), (6, S), (7, S), (8, S), (9, S), (10, S), (J, S), (Q, S), (K, S)]
 
-deck = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), (10, H), (J, H), (Q, H), (K, H), (A, H),
-(1, D), (2, D), (3, D), (4, D), (5, D), (6, D), (7, D), (8, D), (9, D), (10, D), (J, D), (Q, D), (K, D), (A, D)]
+deck = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), (10, H), (J, H), (Q, H), (K, H),
+        (1, D), (2, D), (3, D), (4, D), (5, D), (6, D), (7, D), (8, D), (9, D), (10, D), (J, D), (Q, D), (K, D),
+        (1, C), (2, C), (3, C), (4, C), (5, C), (6, C), (7, C), (8, C), (9, C), (10, C), (J, C), (Q, C), (K, C),
+        (1, S), (2, S), (3, S), (4, S), (5, S), (6, S), (7, S), (8, S), (9, S), (10, S), (J, S), (Q, S), (K, S)]
 
 holeCardsList = []
 communityCardsList = []
@@ -47,23 +52,23 @@ aiBet = 0
 userHand = []
 aiHand = []
 
-for(i = 0; i < = 6; i++){
+for i in range(7):
     # Hand out hole cards
     # Make a random number generator between 0 and len(deck) four times, 2 for player and 2 for AI
     # Check to make sure you're not getting the card multiple times (pop picked cards from deck)
 
-    for i in range(0:4):
+    for i in range(2):
+        deckLength = len(deck)
+        card = deck.pop(random.randrange(deckLength))
+        ai.holeCards.append(card)
+
+    for i in range(2):
+        deckLength = len(deck)
+        card = deck.pop(random.randrange(deckLength))
+        user.holeCards.append(card)
         # Randomly choose a number between 0 and len(deck)
         # Pop card from deck and push into holeCardsList
-        holeCardsList.append(deck.pop(randomlyGeneratedNumber))
         #loop back up and get next card
-
-        
-    # save off ai and user's hole cards
-    ai.holeCards.append(holeCardsList[0])
-    ai.holeCards.append(holeCardsList[1])
-    user.holeCards.append(holeCardsList[2])
-    user.holeCards.append(holeCardsList[3])
  
 
 
@@ -86,24 +91,28 @@ for(i = 0; i < = 6; i++){
 
     # if dealer is the user, prompt user to make choices, get user input for a choice, and then take action based off of that (if else statements)
     if dealerButton == 0:
+        pass
 
     # if dealer is the ai, run ai's code to place a bet
     elif dealerButton == 1: 
+        pass
 
 
     #Non dealer makes mandatory bet (big blind) or exits game
     # if dealer is the user, make the AI do the big blind bet
-    if dealerButton = 0:
+    if dealerButton == 0:
         # make AI do big blind bet (just doubling the bet of the user, unless ai doesn't have enough money to do so, in which it's game over(?)
+        pass
 
     # if dealer is the AI, make user do big blind bet
     elif dealerButton == 1:
         # make user do big blind bet
+        pass
 
 
     # Deal out three com cards
     # Again, randomly generate numbers, index into the deck, pop cards out of deck and into comCards
-    for i in range(0:3):
+    for i in range(3):
         # Randomly choose a number between 0 and len(deck)
         # Pop card from deck and push into communityCardsList
         communityCardsList.append(deck.pop(randomlyGeneratedNumber))
@@ -128,7 +137,7 @@ for(i = 0; i < = 6; i++){
 
     # Deal out 2 com cards
     # Rand num generator
-    for i in range(0:2):
+    for i in range(2):
     # Randomly choose a number between 0 and len(deck)
     # Pop card from deck and push into communityCardsList
         communityCardsList.append(deck.pop(randomlyGeneratedNumber))
@@ -157,6 +166,7 @@ for(i = 0; i < = 6; i++){
         ai.winnings += pot
     else:
         # draw, no one wins
+        pass
 
     # Reset card deck, put all cards back in the deck
     deck = originalCardSet
@@ -171,6 +181,5 @@ for(i = 0; i < = 6; i++){
     userHand.clear()
     aiHand.clear()
 
-}
 
 
