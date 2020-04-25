@@ -42,10 +42,17 @@ def sort(communityCardsList, holeCardsList):
             if entry == card[0]:
                 cardDict[entry].append((card[1], "Hole"))
     # Royal Flush Test
-    # cardList = royalFlush(cardDict, holeCardsList)
-    # print(cardList)
-    return cardDict
+    #cardList = royalFlush(cardDict, holeCardsList)
+    #print(cardList)
 
+     # Two Pair Test
+    cardList = twoPair(cardDict, holeCardsList)
+    print(cardList)
+
+
+
+
+    
 
 """
     # Royal Flush Test
@@ -104,11 +111,11 @@ def royalFlush(cardDict, holeCardsList):
             if holeCardsList[1][0] == 10 or J or Q or K or A:
                 flag = True
             else:
-                return []
-                # return "Error: Your second hole card did not match the 10, J, Q, K, A values"
+                #return []
+                return "Error: Your second hole card did not match the 10, J, Q, K, A values"
         else:
-            return []
-            # return "Error: Your first hole card did not match the 10, J, Q, K, A values"
+            #return []
+            return "Error: Your first hole card did not match the 10, J, Q, K, A values"
 
 
     if flag:
@@ -129,8 +136,8 @@ def royalFlush(cardDict, holeCardsList):
                             communityCtr+=1
             else:
                 # if entries don't exist for that card value in the dict, then our 10, J, K, Q, A pattern was broken
-                return []
-                # return "Error: Entries don't exists for that card value in the dict"
+                #return []
+                return "Error: Entries don't exists for that card value in the dict"
 
 
         # if, after the for loop, we have the proper cards, return the hand
@@ -138,11 +145,11 @@ def royalFlush(cardDict, holeCardsList):
             if holeCtr == 2 and communityCtr == 3:
                 return (hand, 10)
             else:
-                return []
-                # return "Error: Did not have two hole and three community cards"
+                #return []
+                return "Error: Did not have two hole and three community cards"
         else: # if for whatever reason the hand does not have a length of 5 (which is should, otherwise it's an error)
-            # print("Royal Flush Error: Hand did not have a length of 5")
-            # print(len(hand))
+            print("Royal Flush Error: Hand did not have a length of 5")
+            print(len(hand))
             return ()
 
 
@@ -417,7 +424,7 @@ def twoPair(cardDict, holeCardsList):
             for card in cardDict[x]:
                 if card[1] == "Community":
                     # if we don't have a com card pair yet, we build one
-                    if len(comCardPair) < 2:
+                    if len(comCardPair) <= 2:
                         comCardPair.append((x, card[0]))
                     else:
                         # if we've already found our community card pair, then find one more extra community card and save that off
@@ -426,6 +433,11 @@ def twoPair(cardDict, holeCardsList):
                 # if we've found what we need then break out of inner for loop
                 if len(comCardPair) == 2 and extraComCard:
                     break
+                else:
+                    # we have to clear out the comCardPair because we need to have
+                    # our pair be from the same value, and on the next iteration of the 'for card in cardDict[x]' loop we'll be on a
+                    # different card value, so we're just erasing it to start over
+                    comCardPair.clear()
         else: # if cardDict[x] did not have a length of 2
             # but entries still exist for card value x in the dictionary
             # and we still don't have our extra com card
@@ -438,6 +450,7 @@ def twoPair(cardDict, holeCardsList):
         # if we've found what we needed then break out of outer for loop
         if len(comCardPair) == 2 and extraComCard:
             break
+
     # next we check to see if our hole cards make up a pair themselves or not
 
     # if they do...
@@ -449,32 +462,79 @@ def twoPair(cardDict, holeCardsList):
         hand.append(comCardPair[0])
         hand.append(comCardPair[1])
         hand.append(extraComCard)
+        print("Returning from holeCards being a pair")
         return (hand, 3)
 
     # however, if they don't make up a pair...
     else:
-        # then we know at least one of the hole cards should be part of a pair
-        # so we index into the dictionary via the hole cards' values and see which
-        # one is part of a pair, and add that pair + comCardsPair + leftover hole card to hand
-        if len(cardDict[holeCardsList[0][0]]) >= 2:
-            hand.append(holeCardsList[0])
-            for card in cardDict[holeCardsList[0][0]]:
-                if card[1] == "Community":
-                    hand.append((holeCardsList[0][0], card[0]))
-                    hand.append(holeCardsList[1])
-                    break
-        elif len(cardDict[holeCardsList[1][0]]) >= 2:
-            hand.append(holeCardsList[1])
-            for card in cardDict[holeCardsList[1][0]]:
-                if card[1] == "Community":
-                    hand.append((holeCardsList[1][0], card[0]))
-                    hand.append(holeCardsList[0])
-                    break
-        hand.append(comCardPair[0])
-        hand.append(comCardPair[1])
-        return (hand, 3)
-    
+        if len(comCardPair) == 2: # if we found the community card pair, then we know that one of our hole cards should be pair of a hole/com pair
+            hand.append(comCardPair[0])
+            hand.append(comCardPair[1])
+
+            # find which hole card is part of a hole/com pair and then append it to the hand
+            if len(cardDict[holeCardsList[0][0]]) >= 2: # if first hole card was part of a pair
+                hand.append(holeCardsList[0]) # append the hole card
+                for card in cardDict[holeCardsList[0][0]]: # find the other card in it's pair
+                    if card[1] == "Community": # and it's a community card
+                        hand.append((holeCardsList[0][0], card[0])) # append it into hand
+                        hand.append(holeCardsList[1]) # put other hole card into the hand
+                        break
+            # if it wasn't the first hole card, then it should be the second
+            elif len(cardDict[holeCardsList[1][0]]) >= 2:
+                hand.append(holeCardsList[1])
+                for card in cardDict[holeCardsList[1][0]]:
+                    if card[1] == "Community":
+                        hand.append((holeCardsList[1][0], card[0]))
+                        hand.append(holeCardsList[0])
+                        break
+                    
+
+            # check to see if the hand is full, and if so then return
+            if len(hand) == 5:
+                print("Returning from one com card pair and one hole/com pair")
+                return (hand, 3)
+            else:
+                return () # means we didn't find a hole/com pair
+
+            
+        else: # if we didn't find a community card pair then both of our hole cards are part of a hole/com pair
+            # get hole/com pair from first hole card
+            if len(cardDict[holeCardsList[0][0]]) >= 2: # if first hole card was part of a pair
+                hand.append(holeCardsList[0]) # append the hole card
+                for card in cardDict[holeCardsList[0][0]]: # find the other card in it's pair
+                    if card[1] == "Community": # and it's a community card
+                        hand.append((holeCardsList[0][0], card[0])) # append it into hand
+                        break # get out of loop
+            # get hole/com pair from second hole card
+            if len(cardDict[holeCardsList[1][0]]) >= 2:
+                hand.append(holeCardsList[1])
+                for card in cardDict[holeCardsList[1][0]]:
+                    if card[1] == "Community":
+                        hand.append((holeCardsList[1][0], card[0]))
+                        break
+
+            # hand should now have h, c, h, c cards
+            # add one more community card
+            hand.append(extraComCard)
+
+            # make sure length of hand is 5 because if not then we didn't find both hole/com pairs
+            if len(hand) == 5:
+                print("Returning from two hole/com pairs")
+                return (hand, 3)
+            else:
+                return ()
     return ()
+
+                        
+
+
+
+
+        
+
+
+
+
 
 
     
@@ -598,47 +658,24 @@ def highCard(cardDict, holeCardsList):
 
     return ()
 
+    
 
-def rateHand(communityCardsList, holeCardsList):
-    cardDict = sort(communityCardsList, holeCardsList)
-    hand = royalFlush(cardDict, holeCardsList)
-    if hand: return hand
-    hand = straightFlush(cardDict, holeCardsList)
-    if hand: return hand
-    hand = fourOfAKind(cardDict, holeCardsList)
-    if hand: return hand
-    hand = fullHouse(cardDict, holeCardsList)
-    if hand: return hand
-    hand = flush(cardDict, holeCardsList)
-    if hand: return hand
-    hand = straight(cardDict, holeCardsList)
-    if hand: return hand
-    hand = threeOfAKind(cardDict, holeCardsList)
-    if hand: return hand
-    hand = twoPair(cardDict, holeCardsList)
-    if hand: return hand
-    hand = onePair(cardDict, holeCardsList)
-    if hand: return hand
-    hand = highCard(cardDict, holeCardsList)
-    if hand: return hand
-    return("error finding hand score in rateHand")
-
-
-# you need to make sure the same card from the same suit isn't entered twice
-cardList = [(A, H), (7, C), (5, S), (Q, D)]
-holeCardsList = [(2, D), (3, H)]
-hand, score = rateHand(cardList, holeCardsList)
-print(hand, score)
 
 
 # Test runs
+# Two pair
+cardList = [(6, D), (Q, H), (K, S), (9, C)] # you need to make sure the same card from the same suit isn't entered twice
+holeCardsList = [(6, H), (K, C)]
+sort(cardList, holeCardsList)
 
-# Royal Flush
-# cardList = [(A, H), (Q, H), (K, H), (Q, D)] # you need to make sure the same card from the same suit isn't entered twice
-# holeCardsList = [(10, H), (J, H)]
-# sort(cardList, holeCardsList)
+
 
 """
+# Royal Flush
+cardList = [(A, H), (Q, H), (K, H), (Q, D)] # you need to make sure the same card from the same suit isn't entered twice
+holeCardsList = [(10, H), (J, H)]
+sort(cardList, holeCardsList)
+
 # Straight Flush
 cardList = [(3, H), (5, H), (6, H), (8, D)] # you need to make sure the same card from the same suit isn't entered twice
 holeCardsList = [(4, H), (7, H)]
