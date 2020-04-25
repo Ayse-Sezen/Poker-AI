@@ -46,8 +46,9 @@ def sort(communityCardsList, holeCardsList):
     #print(cardList)
 
      # Two Pair Test
-    cardList = twoPair(cardDict, holeCardsList)
-    print(cardList)
+    # cardList = twoPair(cardDict, holeCardsList)
+    # print(cardList)
+    return cardDict
 
 
 
@@ -111,11 +112,11 @@ def royalFlush(cardDict, holeCardsList):
             if holeCardsList[1][0] == 10 or J or Q or K or A:
                 flag = True
             else:
-                #return []
-                return "Error: Your second hole card did not match the 10, J, Q, K, A values"
+                return []
+                # return "Error: Your second hole card did not match the 10, J, Q, K, A values"
         else:
-            #return []
-            return "Error: Your first hole card did not match the 10, J, Q, K, A values"
+            return []
+            # return "Error: Your first hole card did not match the 10, J, Q, K, A values"
 
 
     if flag:
@@ -136,8 +137,8 @@ def royalFlush(cardDict, holeCardsList):
                             communityCtr+=1
             else:
                 # if entries don't exist for that card value in the dict, then our 10, J, K, Q, A pattern was broken
-                #return []
-                return "Error: Entries don't exists for that card value in the dict"
+                return []
+                # return "Error: Entries don't exists for that card value in the dict"
 
 
         # if, after the for loop, we have the proper cards, return the hand
@@ -145,11 +146,11 @@ def royalFlush(cardDict, holeCardsList):
             if holeCtr == 2 and communityCtr == 3:
                 return (hand, 10)
             else:
-                #return []
-                return "Error: Did not have two hole and three community cards"
+                return []
+                # return "Error: Did not have two hole and three community cards"
         else: # if for whatever reason the hand does not have a length of 5 (which is should, otherwise it's an error)
-            print("Royal Flush Error: Hand did not have a length of 5")
-            print(len(hand))
+            # print("Royal Flush Error: Hand did not have a length of 5")
+            # print(len(hand))
             return ()
 
 
@@ -659,8 +660,39 @@ def highCard(cardDict, holeCardsList):
     return ()
 
     
-
-
+def rateHand(communityCardsList, holeCardsList):
+    cardDict = sort(communityCardsList, holeCardsList)
+    hand = royalFlush(cardDict, holeCardsList)
+    if hand:
+        return hand
+    hand = straightFlush(cardDict, holeCardsList)
+    if hand:
+        return hand
+    hand = fourOfAKind(cardDict, holeCardsList)
+    if hand:
+        return hand
+    hand = fullHouse(cardDict, holeCardsList)
+    if hand:
+        return hand
+    hand = flush(cardDict, holeCardsList)
+    if hand:
+        return hand
+    hand = straight(cardDict, holeCardsList)
+    if hand:
+        return hand
+    hand = threeOfAKind(cardDict, holeCardsList)
+    if hand:
+        return hand
+    hand = twoPair(cardDict, holeCardsList)
+    if hand:
+        return hand
+    hand = onePair(cardDict, holeCardsList)
+    if hand:
+        return hand
+    hand = highCard(cardDict, holeCardsList)
+    if hand:
+        return hand
+    return("error finding hand score in rateHand")
 
 # Test runs
 # Two pair
