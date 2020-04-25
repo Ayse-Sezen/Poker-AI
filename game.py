@@ -1,4 +1,5 @@
 import random
+from agents import User, Ai
 A = 14
 K = 13
 Q = 12
@@ -41,8 +42,8 @@ communityCardsList = []
 # // Player is 0, AI is 1
 dealerButton = 1
 
-User user = new User()
-Ai ai = new Ai()
+user = User()
+ai = Ai()
 
 pot = 0
 
@@ -115,7 +116,7 @@ for i in range(7):
     for i in range(3):
         # Randomly choose a number between 0 and len(deck)
         # Pop card from deck and push into communityCardsList
-        communityCardsList.append(deck.pop(randomlyGeneratedNumber))
+        communityCardsList.append(deck.pop(random.randrange(len(deck))))
         # loop back up and get next card
 
 
@@ -140,7 +141,7 @@ for i in range(7):
     for i in range(2):
     # Randomly choose a number between 0 and len(deck)
     # Pop card from deck and push into communityCardsList
-        communityCardsList.append(deck.pop(randomlyGeneratedNumber))
+        communityCardsList.append(deck.pop(random.randrange(len(deck))))
     # loop back up and get next card
 
 
@@ -148,7 +149,7 @@ for i in range(7):
     # Dealer: Pick best hand
     # If Dealer is AI:
         # run community and hole cards through new sort
-        ai.getHand(communityCardsList)
+        # ai.getHand(communityCardsList)
     # If Dealer is User:
         # prompt user to pick 3 community cards, then run only those com cards and the user's hole cards through newSort
         # in order to identify what type of hand the user chose
@@ -171,8 +172,8 @@ for i in range(7):
     # Reset card deck, put all cards back in the deck
     deck = originalCardSet
 
-    ai.holeCardsList.clear()
-    user.holeCardsList.clear()
+    ai.clearHand()
+    user.clearHand()
 
     userBet = 0
     aiBet = 0
