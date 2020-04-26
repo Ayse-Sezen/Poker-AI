@@ -183,8 +183,5 @@ for i in range(7):
     aiBet = 0
     pot = 0 
 
-    userHand.clear()
-    aiHand.clear()
-
 
 
