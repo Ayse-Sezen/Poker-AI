@@ -11,6 +11,11 @@ D = 'Diamonds'
 C = 'Clubs'
 S = 'Spades'
 
+deck = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), (10, H), (J, H), (Q, H), (K, H),
+        (1, D), (2, D), (3, D), (4, D), (5, D), (6, D), (7, D), (8, D), (9, D), (10, D), (J, D), (Q, D), (K, D),
+        (1, C), (2, C), (3, C), (4, C), (5, C), (6, C), (7, C), (8, C), (9, C), (10, C), (J, C), (Q, C), (K, C),
+        (1, S), (2, S), (3, S), (4, S), (5, S), (6, S), (7, S), (8, S), (9, S), (10, S), (J, S), (Q, S), (K, S)]
+
 
 # ******* Codes for each possible card combo *******
 # 1 = High Card
@@ -24,37 +29,9 @@ S = 'Spades'
 # 9 = Straight Flush
 # 10 = Royal Flush
 
+def run(user, ai, deck):
 
-
-
-originalCardSet = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), (10, H), (J, H), (Q, H), (K, H),
-                   (1, D), (2, D), (3, D), (4, D), (5, D), (6, D), (7, D), (8, D), (9, D), (10, D), (J, D), (Q, D), (K, D),
-                   (1, C), (2, C), (3, C), (4, C), (5, C), (6, C), (7, C), (8, C), (9, C), (10, C), (J, C), (Q, C), (K, C),
-                   (1, S), (2, S), (3, S), (4, S), (5, S), (6, S), (7, S), (8, S), (9, S), (10, S), (J, S), (Q, S), (K, S)]
-
-deck = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), (10, H), (J, H), (Q, H), (K, H),
-        (1, D), (2, D), (3, D), (4, D), (5, D), (6, D), (7, D), (8, D), (9, D), (10, D), (J, D), (Q, D), (K, D),
-        (1, C), (2, C), (3, C), (4, C), (5, C), (6, C), (7, C), (8, C), (9, C), (10, C), (J, C), (Q, C), (K, C),
-        (1, S), (2, S), (3, S), (4, S), (5, S), (6, S), (7, S), (8, S), (9, S), (10, S), (J, S), (Q, S), (K, S)]
-
-holeCardsList = []
-communityCardsList = []
-
-# // Player is 0, AI is 1
-dealerButton = 1
-
-user = User()
-ai = Ai()
-
-pot = 0
-
-userBet = 0
-aiBet = 0
-
-userHand = []
-aiHand = []
-
-for i in range(7):
+    communityCardsList = []
     # Hand out hole cards
     # Make a random number generator between 0 and len(deck) four times, 2 for player and 2 for AI
     # Check to make sure you're not getting the card multiple times (pop picked cards from deck)
@@ -83,7 +60,7 @@ for i in range(7):
     elif dealerButton == 1:
         dealerButton = 0
 
-
+    pot = 0
     # Betting Round 1
 
     # Dealer makes mandatory bet (small blind) or exits game
@@ -173,15 +150,25 @@ for i in range(7):
         user.winnings += pot//2
         # this rounds off uneven pots if that was possible
 
-    # Reset card deck, put all cards back in the deck
-    deck = originalCardSet
-
     ai.clearHand()
     user.clearHand()
 
-    userBet = 0
-    aiBet = 0
-    pot = 0 
 
 
+def showBoard(communityCardsList, pot, user, ai):
+    print("Your hand is: {}".format(user.holeCards))
+    print("The board is: {}".format(communityCardsList))
+    print("The pot is {}".format(pot))
+    print("Your bankroll is {0} and the opponent's is {1}".format(user.winnings, ai.winnings))
+
+
+if __name__ == "__main__":
+    user = User()
+    ai = Ai()
+
+    # // Player is 0, AI is 1
+    dealerButton = 1
+
+    for i in range(7):
+        run(user, ai, deck[:])
 

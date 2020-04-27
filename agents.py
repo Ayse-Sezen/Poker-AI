@@ -26,13 +26,8 @@ class User(Agent):
     def __init__(self):
         super().__init__()
 
-    def showBoard(self, communityCardsList, pot, ai):
-        print("Your hand is: {}".format(self.holeCards))
-        print("The board is: {}".format(communityCardsList))
-        print("The pot is {}".format(pot))
-        print("Your bankroll is {0} and the opponent's is {1}".format(self.winnings, ai.winnings))
-
     # state = [pot, amount needed to bet, comCardList]
+    # return value is the amount added to the pot that the opponent needs to match
     def move(self, state): 
         print("Please press b to bet, c to check, or f to fold")
         print("The pot is {0} and you must bet {1}".format(state[0], state[1]))
