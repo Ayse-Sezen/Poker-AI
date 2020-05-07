@@ -16,6 +16,9 @@ deck = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), 
         (1, C), (2, C), (3, C), (4, C), (5, C), (6, C), (7, C), (8, C), (9, C), (10, C), (J, C), (Q, C), (K, C),
         (1, S), (2, S), (3, S), (4, S), (5, S), (6, S), (7, S), (8, S), (9, S), (10, S), (J, S), (Q, S), (K, S)]
 
+state = [1000, 200]
+
+
 
 # ******* Codes for each possible card combo *******
 # 1 = High Card
@@ -30,6 +33,7 @@ deck = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), 
 # 10 = Royal Flush
 
 def run(user, ai, deck):
+    dealerButton = 1
 
     communityCardsList = []
     # Hand out hole cards
@@ -40,20 +44,13 @@ def run(user, ai, deck):
         deckLength = len(deck)
         card = deck.pop(random.randrange(deckLength))
         if i < 2:
-            ai.holeCards.append(card)
+            ai.holeCardsList.append(card)
         else:
-            user.holeCards.append(card)
+            user.holeCardsList.append(card)
 
-        # Randomly choose a number between 0 and len(deck)
-        # Pop card from deck and push into holeCardsList
-        #loop back up and get next card
- 
-
+    
 
     # Hand out dealer button
-    # Alternate the button between two players, always starting with the user getting the dealer button first, then if the user got it on previous round
-    #the AI gets it on the next round
-        
     # if player had button on last round, give button to AI
     if dealerButton == 0:
         dealerButton = 1
@@ -61,45 +58,61 @@ def run(user, ai, deck):
         dealerButton = 0
 
     pot = 0
+    aiBet1 = 0
+    aiBet2 = 0
+
+
+    print("")
+    print("*** Betting Round 1 ***")
+    print("")
+
     # Betting Round 1
 
     # Dealer makes mandatory bet (small blind) or exits game
-    # AI will handle betting on it's own
-    # Give user prompts for betting
 
     # if dealer is the user, prompt user to make choices, get user input for a choice, and then take action based off of that (if else statements)
     if dealerButton == 0:
-        pass
+        pot += user.smallBlind(state)
+        #pass
 
     # if dealer is the ai, run ai's code to place a bet
-    elif dealerButton == 1: 
-        pass
+    elif dealerButton == 1:
+        aiBet1 = ai.smallBlind(state)
+        pot += aiBet1
+        #pass
 
 
-    #Non dealer makes mandatory bet (big blind) or exits game
-    # if dealer is the user, make the AI do the big blind bet
+    # Non Dealer Makes Big Blind
     if dealerButton == 0:
-        # make AI do big blind bet (just doubling the bet of the user, unless ai doesn't have enough money to do so, in which it's game over(?)
-        pass
-
-    # if dealer is the AI, make user do big blind bet
+        # make AI do big blind bet
+        aiBet1 = ai.move(state, user.bet, 1, [], [])
+        pot += aiBet1
+        #pass
     elif dealerButton == 1:
         # make user do big blind bet
-        pass
+        pot += user.move(state)
+        #pass
 
 
+    print("")
+    print("Dealing out Community Cards...");
+    print("");
     # Deal out three com cards
-    # Again, randomly generate numbers, index into the deck, pop cards out of deck and into comCards
     for i in range(3):
-        # Randomly choose a number between 0 and len(deck)
-        # Pop card from deck and push into communityCardsList
         communityCardsList.append(deck.pop(random.randrange(len(deck))))
-        # loop back up and get next card
+
+    print("")
+    print("~The Community Cards~")
+    print("")
+    print(communityCardsList)
 
 
 
 
     # Betting Round 2
+    print("")
+    print("*** Betting Round 2 ***")
+    print("")
 
     # Dealer's choices: Fold, Call, Raise, exit game
     # if Dealer is AI:
@@ -108,18 +121,36 @@ def run(user, ai, deck):
         # User makes their own choice, prompt user for choice and take in input and process it
     # if the choice is to fold, then give other (non-dealer) player all the money and then continue back up to the loop (aka short circuit this and go loop back up)
 
-    # Non Dealer's choices: Fold, Call, Raise, exit game
-    # same as above, do the ssame stuff for AI and for player here
+    # Dealer's choice
+    if dealerButton == 0: # user
+        pot += user.move(state)
+    elif dealerButton == 1: # ai
+        aiBet2 = ai.move(state, user.bet, 0, ai.holeCardsList, communityCardsList)
+        pot += aiBet2
+
+    # Non Dealer's choice
+    if dealerButton == 0: # if user is dealer
+        # ai makes next move
+        aiBet2 = ai.move(state, user.bet, 0, ai.holeCardsList, communityCardsList)
+        pot += aiBet2
+
+    elif dealerButton == 1: # if ai is dealer
+        # user makes next move
+        pot += user.move(state)
 
 
-
+    print("")
+    print("Dealing out Community Cards...")
+    print("")
+    
     # Deal out 2 com cards
     # Rand num generator
     for i in range(2):
-    # Randomly choose a number between 0 and len(deck)
-    # Pop card from deck and push into communityCardsList
         communityCardsList.append(deck.pop(random.randrange(len(deck))))
-    # loop back up and get next card
+
+    print("~The Community Cards~")
+    print(communityCardsList)
+    print("")
 
 
     # Final Step: Generate hands and compare to see who won the pot
@@ -134,41 +165,109 @@ def run(user, ai, deck):
     # Non Dealer: Picks best hand
         # same as above for AI and User hand building
 
-    userScore = user.getHandScore(communityCardsList)
-    aiScore = ai.getHandScore(communityCardsList)
+    print("")
+    print("Who has the best hand...?")
+    print("...")
+    print("")
+    
+    userScore = user.getHandScore(user.holeCardsList, communityCardsList)
+    aiScore = ai.getHandScore(ai.holeCardsList, communityCardsList)
+
+
+    print("")
+    print("User's hand is: ", user.hand)
+    print("AI's hand is: ", ai.hand)
+
     # Compare Hands
     # Just compare card combo numbers returned back with hands from newSort, player with the highest hand wins
     if userScore > aiScore:
         # user wins pot, add pot to user's money
         user.winnings += pot
+        print("")
+        print("User Wins!")
+        print("User winnings is now ", user.winnings)
+        print("")
+        ai.amtLost += aiBet1 + aiBet2
     elif aiScore > userScore:
         # ai wins the pot, add pot to ai's money
         ai.winnings += pot
+        ai.amtWon += pot
+        print("")
+        print("AI Wins!")
+        print("AI's winnings is now ", ai.winnings)
+        print("")
+
+        
     else:
         # draw, no one wins
-        user.winnings += pot//2
-        user.winnings += pot//2
+        user.winnings += round(pot/2)
+        ai.winnings += round(pot/2)
+        print("")
+        print("It's a Draw!")
+        print("User's pot is now", user.winnings)
+        print("AI's pot is now", ai.winnings)
+        print("")
         # this rounds off uneven pots if that was possible
 
-    ai.clearHand()
-    user.clearHand()
+    ai.holeCardsList.clear()
+    user.holeCardsList.clear()
+    
 
 
 
 def showBoard(communityCardsList, pot, user, ai):
-    print("Your hand is: {}".format(user.holeCards))
+    print("Your hand is: {}".format(user.holeCardsList))
     print("The board is: {}".format(communityCardsList))
     print("The pot is {}".format(pot))
     print("Your bankroll is {0} and the opponent's is {1}".format(user.winnings, ai.winnings))
 
 
+
 if __name__ == "__main__":
-    user = User()
-    ai = Ai()
+    #playAgain = True
+    #valid = False
+    rounds = 1000
 
-    # // Player is 0, AI is 1
-    dealerButton = 1
+    #gamesWonFile = open('gamesWon.txt', 'w')
+    #roundsWonFile = open('roundsWon.txt', 'w')
+    amountWonFile = open('amountWon.txt', 'w')
+    amountLostFile = open('amountLost.txt', 'w')
 
-    for i in range(7):
-        run(user, ai, deck[:])
+    while rounds >= 0:
+        user = User()
+        ai = Ai()
 
+        print("")
+        print("~ New Game ~")
+        print("")
+
+        # // Player is 0, AI is 1
+        dealerButton = 1
+
+        for i in range(5):
+            run(user, ai, deck[:])
+
+        #gamesWonFile.write(str(ai.wonGame) + "\n")
+        #roundsWonFile.write(str(ai.roundsWon) + "\n")
+        amountWonFile.write(str(ai.amtWon) + "\n")
+        amountLostFile.write(str(ai.amtLost) + "\n")
+        rounds -= 1
+
+        #while not valid:
+         #   print("")
+          #  print("Play again? Enter y or n.")
+           # choice = input()
+
+           # if choice == 'y':
+            #    playAgain = True
+             #   valid = True
+           # elif choice == 'n':
+            #    playAgain = False
+             #   valid = True
+           # else:
+            #    print("Please pick a valid choice.")
+
+    #gamesWonFile.close()
+    #roundsWonFile.close()
+    amountWonFile.close()
+    amountLostFile.close()
