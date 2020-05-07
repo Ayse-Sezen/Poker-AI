@@ -425,7 +425,7 @@ def twoPair(cardDict, holeCardsList):
             for card in cardDict[x]:
                 if card[1] == "Community":
                     # if we don't have a com card pair yet, we build one
-                    if len(comCardPair) <= 2:
+                    if len(comCardPair) < 2:
                         comCardPair.append((x, card[0]))
                     else:
                         # if we've already found our community card pair, then find one more extra community card and save that off
@@ -434,12 +434,14 @@ def twoPair(cardDict, holeCardsList):
                 # if we've found what we need then break out of inner for loop
                 if len(comCardPair) == 2 and extraComCard:
                     break
-                else:
-                    # we have to clear out the comCardPair because we need to have
-                    # our pair be from the same value, and on the next iteration of the 'for card in cardDict[x]' loop we'll be on a
-                    # different card value, so we're just erasing it to start over
-                    comCardPair.clear()
-        else: # if cardDict[x] did not have a length of 2
+                # else: comCardPair.clear()
+             # we have to clear out the comCardPair because we need to have
+             # our pair be from the same value, and on the next iteration of the 'for card in cardDict[x]' loop we'll be on a
+             # different card value, so we're just erasing it to start over
+             # but that's only IF we didn't find our comCardPair already ****************************************************************************************
+            if len(comCardPair) < 2: 
+                comCardPair.clear()
+        else: # if cardDict[x] did not have a length of 2 or greater
             # but entries still exist for card value x in the dictionary
             # and we still don't have our extra com card
             # then find an extra com card and save that off (trust me, we'll need this later, there's a method to my madness here)
@@ -455,7 +457,7 @@ def twoPair(cardDict, holeCardsList):
     # next we check to see if our hole cards make up a pair themselves or not
 
     # if they do...
-    if holeCardsList[0][0] == holeCardsList[1][0]:
+    if holeCardsList[0][0] == holeCardsList[1][0] and len(comCardPair) == 2:
         # then we can just stick the community card pair and the extra community card we found earlier into the hand along
         # with the hole cards and return that
         hand.append(holeCardsList[0])
@@ -625,7 +627,7 @@ def highCard(cardDict, holeCardsList):
     hand.append(holeCardsList[0])
     hand.append(holeCardsList[1])
     
-    while x >= 0:
+    while x > 0:
         if cardDict[x]: # if an entry exists for that value of x
             # check if there's a hole card as an entry for card value x
             if holeCardsList[0][0] == x or holeCardsList[1][0] == x:
@@ -642,7 +644,7 @@ def highCard(cardDict, holeCardsList):
     x -= 1
 
     
-    while x >= 0:
+    while x > 0:
         if cardDict[x]:
             for card in cardDict[x]:
                 if card[1] == "Community":
@@ -692,7 +694,8 @@ def rateHand(communityCardsList, holeCardsList):
     hand = highCard(cardDict, holeCardsList)
     if hand:
         return hand
-    return("error finding hand score in rateHand")
+    return [0, 0]
+    #return("error finding hand score in rateHand")
 
 # Test runs
 # Two pair
