@@ -1,5 +1,5 @@
 import random
-from agents import User, Ai
+from agents import User, Ai, ImprovedAi
 
 A = 14
 K = 13
@@ -95,8 +95,8 @@ def run(user, ai, deck):
 
 
     print("")
-    print("Dealing out Community Cards...");
-    print("");
+    print("Dealing out Community Cards...")
+    print("")
     # Deal out three com cards
     for i in range(3):
         communityCardsList.append(deck.pop(random.randrange(len(deck))))
@@ -235,7 +235,7 @@ if __name__ == "__main__":
 
     while rounds >= 0:
         user = User()
-        ai = Ai()
+        ai = ImprovedAi()
 
         print("")
         print("~ New Game ~")

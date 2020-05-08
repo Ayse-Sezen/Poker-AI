@@ -2,6 +2,22 @@ from newSort import rateHand
 import random
 
 
+A = 14
+K = 13
+Q = 12
+J = 11
+
+H = 'Hearts'
+D = 'Diamonds'
+C = 'Clubs'
+S = 'Spades'
+
+deck = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), (10, H), (J, H), (Q, H), (K, H),
+        (1, D), (2, D), (3, D), (4, D), (5, D), (6, D), (7, D), (8, D), (9, D), (10, D), (J, D), (Q, D), (K, D),
+        (1, C), (2, C), (3, C), (4, C), (5, C), (6, C), (7, C), (8, C), (9, C), (10, C), (J, C), (Q, C), (K, C),
+        (1, S), (2, S), (3, S), (4, S), (5, S), (6, S), (7, S), (8, S), (9, S), (10, S), (J, S), (Q, S), (K, S)]
+
+
 class Agent:
     
     def __init__(self):
@@ -117,8 +133,9 @@ class Ai(Agent):
         print("")
         print("Ai is placing small blind...")
 
-        self.bet = placeBets(state, 1)
-        self.winnings -= self.bet # **************** Do you reference this as winnings or as agent.winnings?
+        hscore = 0
+        self.bet = self.placeBets(state, 1, hscore)
+        self.winnings -= self.bet
 
         print("Ai placed an initial bet of {}".format(self.bet))
         print("")
@@ -158,7 +175,7 @@ class Ai(Agent):
     def placeBets(self, userBet, smallBlindFlag, handScore):
         # if ai is placing bets for a small blind, make bet within a certain range
         if smallBlindFlag:
-            return randint(200, 500)
+            return random.randrange(200, 500)
         else:
              if self.handScore <= 5: # if hand is in lower 5 hand ranks
                 # Call
@@ -176,6 +193,109 @@ class Ai(Agent):
                  return self.bet
                 
 
+class ImprovedAi(Agent):
+    bet = 0
+    hand = []
+    handScore = 0
+    winnings = 20000
+    holeCardsList = []
+    amtWon = 0
+    amtLost = 0
+
+    def __init__(self):
+        super().__init__()
+
+    def smallBlind(self, state):
+        print("")
+        print("Ai is placing small blind...")
+
+        hscore = 0
+        if self.holeCardsList[0][0] == self.holeCardsList[1][0]:
+            hscore += 4
+        if self.holeCardsList[0][1] == self.holeCardsList[1][1]:
+            hscore += 2
+        hscore += ((self.holeCardsList[0][0] + self.holeCardsList[1][0])//4)
+        self.bet = self.placeBets(state, 1, hscore)
+        self.winnings -= self.bet
+
+        print("Ai placed an initial bet of {}".format(self.bet))
+        print("")
+
+        return self.bet
+
+        # make sure you record this initial bet somewhere because user class will need to know what it is
+
+    def move(self, state, userBet, bigBlindFlag, holeCardsList, communityCardsList):
+        if bigBlindFlag:
+            # ai has to at least match double of user's bet
+            doubleBet = userBet * 2
+            if doubleBet > self.winnings:  # if double of player's bet is greater than the initial amount the ai has to play with
+                # forfeit game or pass on this round?
+                pass
+            else:
+                print("")
+                print("Ai is placing big blind...")
+                self.bet = doubleBet
+                self.winnings -= self.bet
+        else:
+            # place bets according to rank of card hand for this round
+            # lower hand ranking = lower bet
+            print("")
+            print("Ai is placing bets...")
+            self.handScore = self.calculateBestHand(
+                holeCardsList, communityCardsList)
+            self.bet = self.placeBets(userBet, 0, self.handScore)
+
+        print("Ai is placing a bet of {}".format(self.bet))
+        print("")
+        return self.bet
+
+    def calculateBestHand(self, holeCardsList, communityCardsList):
+        hand = []
+        handScore = 0
+        if len(communityCardsList) == 5:
+            hand, handScore == rateHand(holeCardsList, communityCardsList)
+        else:
+            testDeck = deck
+            for i in range(2):
+                if holeCardsList[i] in testDeck:
+                    testDeck.remove(holeCardsList[i])
+            
+            for i in range(len(communityCardsList)):
+                if communityCardsList[i] in testDeck:
+                    testDeck.remove(communityCardsList[i])
+            
+            sumScore = 0
+            counter = 1
+            for _ in range(5-len(communityCardsList)):
+                for i in range(len(testDeck)):
+                    tempCCList = communityCardsList + [testDeck[i]]
+                    counter+=1
+                    hand, tempscore = rateHand(holeCardsList, tempCCList)
+                    sumScore += tempscore
+            handScore = sumScore//counter
+
+        return handScore
+
+    def placeBets(self, userBet, smallBlindFlag, handScore):
+        # if ai is placing bets for a small blind, make bet within a certain range
+        if smallBlindFlag:
+            return random.randrange(200, 500)
+        else:
+             if self.handScore <= 5:  # if hand is in lower 5 hand ranks
+                # Call
+                 self.bet = userBet
+                 self.winnings -= self.bet
+                 return self.bet
+             elif self.handScore > 5 and self.handScore <= 7:
+                # Raise
+                self.bet = random.randint(userBet, userBet+200)
+                self.winnings -= self.bet
+                return self.bet
+             elif self.handScore > 7:
+                 self.bet = random.randint(userBet+200, userBet+600)
+                 self.winnings -= self.bet
+                 return self.bet
 
 # Global getHandScore function
 #def getHandScore(self, holeCardsList, communityCardsList):
@@ -197,7 +317,7 @@ def testUser(pot, under):
     ai.winnings = 13
     ccl = ["ccard1", "ccard2", "ccard3"]
     us.holeCards = ["hcard1", "hcard2"]
-    us.showBoard(ccl, pot, ai)
+    # us.showBoard(ccl, pot, ai)
     state = [pot, under, ccl]
     newPot = us.move(state)
     print("result = ", newPot)
