@@ -16,7 +16,7 @@ deck = [(1, H), (2, H), (3, H), (4, H), (5, H), (6, H), (7, H), (8, H), (9, H), 
         (1, C), (2, C), (3, C), (4, C), (5, C), (6, C), (7, C), (8, C), (9, C), (10, C), (J, C), (Q, C), (K, C),
         (1, S), (2, S), (3, S), (4, S), (5, S), (6, S), (7, S), (8, S), (9, S), (10, S), (J, S), (Q, S), (K, S)]
 
-state = [1000, 200]
+state = [2000, 200, 0]
 
 
 
@@ -60,6 +60,7 @@ def run(user, ai, deck):
     pot = 0
     aiBet1 = 0
     aiBet2 = 0
+    state = [user.winnings, 200, pot]
 
 
     print("")
@@ -73,12 +74,15 @@ def run(user, ai, deck):
     # if dealer is the user, prompt user to make choices, get user input for a choice, and then take action based off of that (if else statements)
     if dealerButton == 0:
         pot += user.smallBlind(state)
+        state[2] = pot
         #pass
 
     # if dealer is the ai, run ai's code to place a bet
     elif dealerButton == 1:
         aiBet1 = ai.smallBlind(state)
         pot += aiBet1
+        state[2] = pot
+
         #pass
 
 
@@ -87,10 +91,12 @@ def run(user, ai, deck):
         # make AI do big blind bet
         aiBet1 = ai.move(state, user.bet, 1, [], [])
         pot += aiBet1
+        state[2] = pot
         #pass
     elif dealerButton == 1:
         # make user do big blind bet
         pot += user.move(state)
+        state[2] = pot
         #pass
 
 
@@ -124,19 +130,25 @@ def run(user, ai, deck):
     # Dealer's choice
     if dealerButton == 0: # user
         pot += user.move(state)
+        state[2] = pot
     elif dealerButton == 1: # ai
+        state[1] = user.bet
         aiBet2 = ai.move(state, user.bet, 0, ai.holeCardsList, communityCardsList)
         pot += aiBet2
+        state[2] = pot
 
     # Non Dealer's choice
     if dealerButton == 0: # if user is dealer
         # ai makes next move
+        state[1] = user.bet
         aiBet2 = ai.move(state, user.bet, 0, ai.holeCardsList, communityCardsList)
         pot += aiBet2
+        state[2] = pot
 
     elif dealerButton == 1: # if ai is dealer
         # user makes next move
         pot += user.move(state)
+        state[2] = pot
 
 
     print("")
@@ -175,11 +187,27 @@ def run(user, ai, deck):
 
 
     print("")
-    print("User's hand is: ", user.hand)
-    print("AI's hand is: ", ai.hand)
+    print("User's hand is: ", user.hand, userScore)
+    print("AI's hand is: ", ai.hand, aiScore)
 
     # Compare Hands
     # Just compare card combo numbers returned back with hands from newSort, player with the highest hand wins
+    if userScore == aiScore:
+        aiHandList = []
+        userHandList = []
+        for i in range(5):
+            aiHandList.append(ai.hand[i][0])
+            userHandList.append(user.hand[i][0])
+        aiHigh = max(aiHandList)
+        userHigh = max(userHandList)
+        if  aiHigh > userHigh:
+            aiScore += 1
+        elif aiHigh < userHigh:
+            userScore += 1
+        else:
+            pass
+
+
     if userScore > aiScore:
         # user wins pot, add pot to user's money
         user.winnings += pot
@@ -271,3 +299,5 @@ if __name__ == "__main__":
     #roundsWonFile.close()
     amountWonFile.close()
     amountLostFile.close()
+    print("user total = {}".format(user.winnings))
+    print("ai total = {}".format(ai.winnings))

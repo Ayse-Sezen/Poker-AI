@@ -22,6 +22,7 @@ class Agent:
     
     def __init__(self):
         self.holeCardsList = []
+        self.foldFlag = 0
         #self.winnings = 10000 # I changed this from 0 to 10k so that agents have money to play with
         #self.handScore = 0
 
@@ -29,6 +30,8 @@ class Agent:
         return self.holeCardsList
 
     def getHandScore(self, holeCardsList, communityCardsList):
+        if self.foldFlag:
+            return 0
         bestHand = rateHand(communityCardsList, holeCardsList)
         self.hand = bestHand[0]
         self.handScore = bestHand[1]
@@ -37,6 +40,7 @@ class Agent:
     def clearHand(self):
         self.holeCardsList = []
         self.handScore = 0
+        self.foldFlag = 0
 
 
 
@@ -228,7 +232,7 @@ class ImprovedAi(Agent):
     def move(self, state, userBet, bigBlindFlag, holeCardsList, communityCardsList):
         if bigBlindFlag:
             # ai has to at least match double of user's bet
-            doubleBet = userBet * 2
+            doubleBet = state[1] * 2
             if doubleBet > self.winnings:  # if double of player's bet is greater than the initial amount the ai has to play with
                 # forfeit game or pass on this round?
                 pass
@@ -244,7 +248,7 @@ class ImprovedAi(Agent):
             print("Ai is placing bets...")
             self.handScore = self.calculateBestHand(
                 holeCardsList, communityCardsList)
-            self.bet = self.placeBets(userBet, 0, self.handScore)
+            self.bet = self.placeBets(state, 0, self.handScore)
 
         print("Ai is placing a bet of {}".format(self.bet))
         print("")
@@ -277,25 +281,35 @@ class ImprovedAi(Agent):
 
         return handScore
 
-    def placeBets(self, userBet, smallBlindFlag, handScore):
+    def placeBets(self, state, smallBlindFlag, handScore):
         # if ai is placing bets for a small blind, make bet within a certain range
+        userWinnings = state[0]
+        userBet = state[1]
+        pot = state[2]
         if smallBlindFlag:
-            return random.randrange(200, 500)
+            sbBet = self.winnings//200
+            return max(random.randrange(200, 500), sbBet*(20, 50))
         else:
-             if self.handScore <= 5:  # if hand is in lower 5 hand ranks
+            if ((self.handScore < 2) and (pot > self.winnings//5)):
+                self.foldFlag =1
+                print("AI folded")
+                return 0
+                # fold
+            if self.handScore <= 4:  # if hand is in lower 5 hand ranks
                 # Call
-                 self.bet = userBet
-                 self.winnings -= self.bet
-                 return self.bet
-             elif self.handScore > 5 and self.handScore <= 7:
-                # Raise
-                self.bet = random.randint(userBet, userBet+200)
+                self.bet = userBet
                 self.winnings -= self.bet
                 return self.bet
-             elif self.handScore > 7:
-                 self.bet = random.randint(userBet+200, userBet+600)
-                 self.winnings -= self.bet
-                 return self.bet
+            elif self.handScore > 4 and self.handScore <= 6:
+                # Raise
+                self.bet = random.randint(userBet+pot//6, userBet+200+pot//6)
+                self.winnings -= self.bet
+                return self.bet
+            elif self.handScore > 6:
+                self.bet = random.randint(
+                    userBet+pot//3+userWinnings//10, userBet+pot//2+userWinnings//10)
+                self.winnings -= self.bet
+                return self.bet
 
 # Global getHandScore function
 #def getHandScore(self, holeCardsList, communityCardsList):
