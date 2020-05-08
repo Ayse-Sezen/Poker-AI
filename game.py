@@ -89,6 +89,7 @@ def run(user, ai, deck):
     # Non Dealer Makes Big Blind
     if dealerButton == 0:
         # make AI do big blind bet
+        state[1] = user.bet
         aiBet1 = ai.move(state, user.bet, 1, [], [])
         pot += aiBet1
         state[2] = pot
@@ -196,10 +197,18 @@ def run(user, ai, deck):
         aiHandList = []
         userHandList = []
         for i in range(5):
-            aiHandList.append(ai.hand[i][0])
-            userHandList.append(user.hand[i][0])
-        aiHigh = max(aiHandList)
-        userHigh = max(userHandList)
+            if ai.hand:
+                aiHandList.append(ai.hand[i][0])
+            if user.hand:
+                userHandList.append(user.hand[i][0])
+        if ai.hand:
+            aiHigh = max(aiHandList)
+        else:
+            aiHigh = 0
+        if user.hand:
+            userHigh = max(userHandList)
+        else:
+            userHigh = 0
         if  aiHigh > userHigh:
             aiScore += 1
         elif aiHigh < userHigh:
@@ -237,8 +246,8 @@ def run(user, ai, deck):
         print("")
         # this rounds off uneven pots if that was possible
 
-    ai.holeCardsList.clear()
-    user.holeCardsList.clear()
+    ai.clearHand()
+    user.clearHand()
     
 
 
@@ -254,14 +263,14 @@ def showBoard(communityCardsList, pot, user, ai):
 if __name__ == "__main__":
     #playAgain = True
     #valid = False
-    rounds = 1000
+    rounds = 1
 
     #gamesWonFile = open('gamesWon.txt', 'w')
     #roundsWonFile = open('roundsWon.txt', 'w')
     amountWonFile = open('amountWon.txt', 'w')
     amountLostFile = open('amountLost.txt', 'w')
 
-    while rounds >= 0:
+    while rounds > 0:
         user = User()
         ai = ImprovedAi()
 

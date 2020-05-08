@@ -39,7 +39,7 @@ class Agent:
 
     def clearHand(self):
         self.holeCardsList = []
-        self.handScore = 0
+        self.handScore = 3
         self.foldFlag = 0
 
 
@@ -56,7 +56,8 @@ class User(Agent):
 
     def smallBlind(self, state):
         print("")
-        print("Please press b to place an initial bet")
+        # print("Please press b to place an initial bet")
+        print("testing AI places an initial bet")
         #choice = input()
         choice = 'b'
 
@@ -71,8 +72,9 @@ class User(Agent):
     def move(self, state):
         x = 0
         print("")
-        print("Please press b to bet, c to check, or f to fold")
-        print("The pot is {0} and you must bet {1}".format(state[0], state[1]))
+        # print("Please press b to bet, c to check, or f to fold")
+        print("the test ai will press b to bet, c to check, or f to fold")
+        print("The pot is {0} and it must bet {1}".format(state[2], state[1]))
         #choice = input()
         choice = 'b'
         if choice == 'b':
@@ -95,11 +97,14 @@ class User(Agent):
     def placeBet(self, state):
         #under = state[1]
         under = 200
+        # print("")
+        # print("Your bankroll is {}".format(self.winnings))
+        # print("You must bet at least {}".format(under))
+        # print("")
+        # print("How much would you like to bet? Press q to cancel bet")        
+        print("Test AI bankroll is {}".format(self.winnings))
+        print("Test AI must bet at least {}".format(under))
         print("")
-        print("Your bankroll is {}".format(self.winnings))
-        print("You must bet at least {}".format(under))
-        print("")
-        print("How much would you like to bet? Press q to cancel bet")
         #betStr = input()
         bet = random.randint(under, 2000)
         betStr = str(bet)
@@ -114,8 +119,10 @@ class User(Agent):
                 return self.placeBet(state)
             else: # screw try catch for bad inputs 
                 self.winnings -= self.bet
+                print("the test ai is betting {}".format(self.bet))
                 return self.bet
                 #return self.bet - under
+        
 
 
 
@@ -153,6 +160,7 @@ class Ai(Agent):
         if bigBlindFlag:
             # ai has to at least match double of user's bet
             doubleBet = userBet * 2
+            doubleBet = max(state[1], doubleBet)
             if doubleBet > self.winnings: # if double of player's bet is greater than the initial amount the ai has to play with
                 # forfeit game or pass on this round?
                 pass
@@ -288,10 +296,12 @@ class ImprovedAi(Agent):
         pot = state[2]
         if smallBlindFlag:
             sbBet = self.winnings//200
-            return max(random.randrange(200, 500), sbBet*(20, 50))
+            self.bet = max(random.randrange(200, 500), sbBet*(20, 50))
+            print("AI is betting {}".format(self.bet))
+            return self.bet
         else:
-            if ((self.handScore < 2) and (pot > self.winnings//5)):
-                self.foldFlag =1
+            if ((self.handScore < 2) and (pot > self.winnings//2)):
+                self.foldFlag = 1
                 print("AI folded")
                 return 0
                 # fold
@@ -299,16 +309,19 @@ class ImprovedAi(Agent):
                 # Call
                 self.bet = userBet
                 self.winnings -= self.bet
+                print("AI is betting {}".format(self.bet))
                 return self.bet
             elif self.handScore > 4 and self.handScore <= 6:
                 # Raise
                 self.bet = random.randint(userBet+pot//6, userBet+200+pot//6)
                 self.winnings -= self.bet
+                print("AI is betting {}".format(self.bet))
                 return self.bet
             elif self.handScore > 6:
                 self.bet = random.randint(
                     userBet+pot//3+userWinnings//10, userBet+pot//2+userWinnings//10)
                 self.winnings -= self.bet
+                print("AI is betting {}".format(self.bet))
                 return self.bet
 
 # Global getHandScore function
